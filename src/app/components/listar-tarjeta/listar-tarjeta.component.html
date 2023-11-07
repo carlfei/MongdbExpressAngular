@@ -1,13 +1,23 @@
 <div class="card">
-    <div class="card body">
+    <div class="card-body">
         <h5 class="titulo">LISTAR TARJETA</h5>
         <table class="table">
-            <tr>
-                <td></td>
-                <td><i class="fa-solid fa-pen"></i></td>
-                <td> <i class="fa-solid fa-trash"></i></td>
-            </tr>
+            <thead class="fw-bold">
+                <th>Titular</th>
+                <th>Número de Tarjeta</th>
+                <th>Fecha de Caducidad</th>
+                <th>Editar</th>
+                <th>Borrar</th>
+            </thead>
+            <tbody>
+                <tr *ngFor="let card of cuentasBancarias">
+                    <td>{{this.card.titular}}</td>
+                    <td>{{this.card.numeroTarjeta}}</td>
+                    <td>{{this.card.fechaCaducidad}}</td>
+                    <td><i class="fa-solid fa-pencil"></i></td>
+                    <td><i class="fa-solid fa-trash-can text-danger"></i></td>
+                </tr>
+            </tbody>
         </table>
-
     </div>
 </div>

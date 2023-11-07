@@ -6,8 +6,8 @@ export class Tarjeta{
     fechaCreacion?:string;
     fechaCaducidad:Date;
 
-    constructor(id:string, titular:string,numeroTarjeta:string, cvv:number,fechaCreacion:string){
-        this.id=id;
+    constructor(/*id:string,*/ titular:string,numeroTarjeta:string, cvv:number,fechaCreacion:string){
+        //this.id=id;
         this.titular=titular;
         this.numeroTarjeta=numeroTarjeta;
         this.cvv=cvv;

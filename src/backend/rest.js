@@ -6,7 +6,8 @@ const cardEntryModel = require('./entry-schema.js')
 const mongoose = require('mongoose')
 
 
-mongoose.connect("mongodb+srv://<username>:<password>@cluster0.mmmr860.mongodb.net<dbname>/?retryWrites=true&w=majority")
+
+mongoose.connect("mongodb+srv://<username>:<password>@cluster0.mmmr860.mongodb.net<dbname>/bank?retryWrites=true&w=majority")
     .then(()=>
         console.log('conectado')
     )
@@ -22,7 +23,9 @@ app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');  // Corregido el espacio en blanco entre POST y PUT
     next();
 });
+
 app.post('/addcard', (req,res)=>{
+    try{
     const cardEntry = new cardEntryModel({
         titular: req.body.titular,
         numeroTarjeta:req.body.numeroTarjeta,
@@ -35,6 +38,9 @@ app.post('/addcard', (req,res)=>{
     res.status(200).json({
         message:'Post Submited'
     })
+} catch (error){
+    res.send('error: \n'+error)
+}
 });
 
 app.get('/card',(req,res,next)=>{
@@ -43,8 +49,9 @@ cardEntryModel.find()
         cuentasBancarias = data
         res.json({'cards':data})
     })
-    .catch(()=>{
+    .catch((error)=>{
         console.log('Error with cards')
+        res.send('Error: \n'+error)
     })
 })
 
