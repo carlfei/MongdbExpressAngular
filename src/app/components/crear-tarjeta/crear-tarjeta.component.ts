@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Tarjeta } from 'src/app/model/tarjeta';
+import { ToastrService } from 'ngx-toastr';
 import { TarjetaService } from 'src/app/services/tarjeta.service';
 
 @Component({
@@ -8,10 +9,13 @@ import { TarjetaService } from 'src/app/services/tarjeta.service';
   templateUrl: './crear-tarjeta.component.html',
   styleUrls: ['./crear-tarjeta.component.css'],
 })
-export class CrearTarjetaComponent {
+export class CrearTarjetaComponent implements	OnInit{
   form: FormGroup;
-
-  constructor(private _fb: FormBuilder, private _ts:TarjetaService) {
+  titulo:string = "crear tarjeta"
+  id: string | undefined
+  private mensajeToast: string[] =["",""]
+  constructor(private _fb: FormBuilder, private _ts:TarjetaService, 
+     private  _toastr:ToastrService) {
     this.form = this._fb.group(
       //los formularios reactivos permiten, a través de Validators,
       {
@@ -39,14 +43,20 @@ export class CrearTarjetaComponent {
       }
     );
   }
+  ngOnInit(): void {
+   this._ts.getTarjeta().subscribe((data)=>{
+      this.titulo = "Editar tarjeta"
+      this.id = data._id
+      this.form.patchValue({
+        titular: data.titular,
+        numeroTarjeta: data.numeroTarjeta,
+        fechaCaducidad: data.fechaCaducidad,
+        cvv:data.cvv
+      })
+   })
+  }
   crearTarjeta() {
-    // const TARJETA:Tarjeta = {
-    //   titular:this.form.value.titular,
-    //   numeroTarjeta:this.form.value.numeroTarjeta,
-    //   fechaCaducidad:this.form.value.fechaCaducidad,
-    //   cvv:this.form.value.cvv,
-    //   fechaCreacion: new Date()
-    // }
+   
 
     const TARJETA = new Tarjeta(
       this.form.value.titular,
@@ -57,11 +67,38 @@ export class CrearTarjetaComponent {
     );
 
     this._ts.create(TARJETA);
-    this.form.reset();
-    window.location.reload();
+  //  this.form.reset();
+  this._toastr.success("registro exitoso a la bd")
+  setInterval(()=>{window.location.reload()},2000)
+      
+   //window.location.reload();
 
     // console.log(this.form.value.numeroTarjeta);
     // console.log(this.form);
+  }
+
+  editarTarjeta(tarjeta: Tarjeta){
+    this._ts.update(tarjeta).subscribe()
+  }
+
+  guardarTarjeta(){
+    if(this.id === undefined){
+      this.crearTarjeta()
+      this.mensajeToast = ["registro exitoso","registro añadido"]
+    }else{
+      const TARJETA: Tarjeta = {
+        _id: this.id,
+        titular: this.form.value.titular,
+        numeroTarjeta: this.form.value.numeroTarjeta,
+        fechaCaducidad: this.form.value.fechaCaducidad,
+        cvv: this.form.value.cvv
+      }
+      this.editarTarjeta(TARJETA)
+      this.mensajeToast = ["registro editado exitoso","registro editado"]
+    }
+
+    this._toastr.success(this.mensajeToast[0],this.mensajeToast[1])
+    setTimeout(() => window.location.reload(),2000)
   }
 }
 
